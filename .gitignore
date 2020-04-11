@@ -3,7 +3,23 @@
 
 # Log file
 *.log
+# Intellij
+.idea/*
+*.iml
+!.idea/runConfigurations
+!.idea/codeStyles
+!.idea/runConfigurations/*
+.idea/codeStyles/*
+!.idea/checkstyle-idea.xml
+!.idea/codeStyles/codeStyleConfig.xml
+bin
+.settings
+.project
+PerfTestOverwatch/gatling_results/*
+PerfTestOverwatch/logs/*
 
+# Mac
+.DS_Store
 # BlueJ files
 *.ctxt
 
