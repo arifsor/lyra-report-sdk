@@ -5,6 +5,7 @@
 *.log
 # Intellij
 .idea/*
+
 *.iml
 !.idea/runConfigurations
 !.idea/codeStyles
@@ -15,8 +16,7 @@
 bin
 .settings
 .project
-PerfTestOverwatch/gatling_results/*
-PerfTestOverwatch/logs/*
+.idea/workspace.xml
 
 # Mac
 .DS_Store
