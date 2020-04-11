@@ -44,7 +44,6 @@ public class ReportService {
 
     final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
 
-
     final Exporter exporter = new HtmlExporter();
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     exporter.setExporterOutput(new SimpleHtmlExporterOutput(out));
