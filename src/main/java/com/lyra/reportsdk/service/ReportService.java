@@ -9,6 +9,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.export.Exporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleHtmlExporterConfiguration;
 import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleHtmlReportConfiguration;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,12 @@ import java.util.Map;
 @Service
 public class ReportService {
 
-  public String exportReport(File file, Collection<?> beanCollection) throws JRException {
+  public String exportReport(File file, Collection<?> beanCollection, String pageNo) throws JRException {
 
+    //Compile JRXML to Jasper
     final JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-    final JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(beanCollection);
 
+    //Prepare report parameters
     final Map<String, Object> parameters = new HashMap<>();
     parameters.put("COMPANY_NAME", "Syed Brothers Hardware Inc");
     parameters.put("COMPANY_ADDRESS", "2345 Spectrum Way, Mississauga, Ontario");
@@ -42,17 +44,44 @@ public class ReportService {
     parameters.put("COMPANY_PHONE_FAX_INFO", "+1 987 766 6678");
     parameters.put("EMAIL_WEB", "info@abc.com");
 
+    //Fill report with datasource
+    final JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(beanCollection);
     final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+    final Integer totalPageCount = jasperPrint.getPages().size();
+    //Prepare report configuration
 
+    SimpleHtmlReportConfiguration reportConfig = new SimpleHtmlReportConfiguration();
+    SimpleHtmlExporterConfiguration htmlExporterConfiguration = new SimpleHtmlExporterConfiguration();
+
+    if(pageNo != null) {
+      Integer currentPageNo = Integer.valueOf(pageNo) - 1;
+      reportConfig.setStartPageIndex(currentPageNo);
+      reportConfig.setEndPageIndex(currentPageNo);
+      if((currentPageNo + 1) < totalPageCount) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<div>");
+        sb.append("[ Page: " + (currentPageNo + 1) + " of " + totalPageCount + " ] ");
+        sb.append("<a style=\"font-family:Tahoma;color:#0000FF;\" href=\"?pageNo=");
+        sb.append((currentPageNo + 2));
+        sb.append("\">Next Page</a></div><br /><br /><br />");
+        sb.append("</td><td width=\"50%\">&nbsp;</td></tr>");
+        sb.append("</table>");
+        sb.append("</body");
+        sb.append("</html>");
+        htmlExporterConfiguration.setHtmlFooter(sb.toString());
+      }
+    }
+    //default zoom
+    reportConfig.setZoomRatio(2.0f);
 
     final Exporter exporter = new HtmlExporter();
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     exporter.setExporterOutput(new SimpleHtmlExporterOutput(out));
     exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
 
-    SimpleHtmlReportConfiguration htmlReportConfig = new SimpleHtmlReportConfiguration();
-    htmlReportConfig.setZoomRatio(2.0f);
-    exporter.setConfiguration(htmlReportConfig);
+
+    exporter.setConfiguration(reportConfig);
+    exporter.setConfiguration(htmlExporterConfiguration);
 
     exporter.exportReport();
     return  new String(out.toByteArray());

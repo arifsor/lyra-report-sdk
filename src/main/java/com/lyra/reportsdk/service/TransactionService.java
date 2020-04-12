@@ -357,9 +357,9 @@ public class TransactionService {
     return transactionRepository.findAll();
   }
 
-  public String getReport() throws FileNotFoundException, JRException {
+  public String getReport(String pageNo) throws FileNotFoundException, JRException {
     final File jrxmlFile = ResourceUtils.getFile("classpath:trans.jrxml");
     List<Transaction> customers = transactionRepository.findAll();
-    return reportService.exportReport(jrxmlFile, customers);
+    return reportService.exportReport(jrxmlFile, customers, pageNo);
   }
 }

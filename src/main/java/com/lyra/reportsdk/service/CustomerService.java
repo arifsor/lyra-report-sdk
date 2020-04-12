@@ -172,9 +172,9 @@ public class CustomerService {
     return customerRepository.findAll();
   }
 
-  public String getReport() throws FileNotFoundException, JRException {
+  public String getReport(String pageNo) throws FileNotFoundException, JRException {
     final File jrxmlFile = ResourceUtils.getFile("classpath:customers.jrxml");
     List<Customer> customers = customerRepository.findAll();
-    return reportService.exportReport(jrxmlFile, customers);
+    return reportService.exportReport(jrxmlFile, customers, pageNo);
   }
 }

@@ -9,6 +9,7 @@ import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.FileNotFoundException;
@@ -42,12 +43,14 @@ public class MainController {
   }
 
   @GetMapping("/report/customers")
-  public String generateCustomerReport() throws FileNotFoundException, JRException {
-    return customerService.getReport();
+  public String generateCustomerReport(@RequestParam(name = "pageNo", required = false) String pageNo)
+    throws FileNotFoundException, JRException {
+    return customerService.getReport(pageNo);
   }
 
   @GetMapping("/report/transactions")
-  public String generateTransactionReport() throws FileNotFoundException, JRException  {
-    return transactionService.getReport();
+  public String generateTransactionReport(@RequestParam(name = "pageNo", required = false) String pageNo)
+    throws FileNotFoundException, JRException  {
+    return transactionService.getReport(pageNo);
   }
 }
